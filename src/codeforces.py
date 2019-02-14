@@ -1,0 +1,78 @@
+import requests
+from src.main import *
+
+class CodeforcesUtil:
+
+    @staticmethod
+    def api_query(method, **kwargs):
+        url = 'https://codeforces.com/api/{}?{}'.format(
+            method,
+            '&'.join(['='.join([key, str(val)]) for key, val in kwargs.items()]))
+        result = requests.get(url).json()
+        if result['status'] != 'OK':
+            raise Exception()
+
+        print(result)
+        return result['result']
+
+    @staticmethod
+    def get_standings(contest_id, users):
+        return CodeforcesUtil.api_query(
+            'contest.standings',
+            contestId=contest_id,
+            handles=';'.join(users)
+        )
+
+    @staticmethod
+    def get_rating(user):
+        return CodeforcesUtil.api_query(
+            'user.rating',
+            handle=user
+        )
+
+
+class Codeforces(Platform):
+    def __init__(self):
+        super().__init__('codeforces')
+
+        self.columns = [
+            GenericColumn('cf-name', 'CF Name',
+                          lambda user: user.accounts['codeforces'].name if 'codeforces' in user.accounts else None),
+            CodeforcesRatingColumn(),
+            CodeforcesContestColumn('CF 538 rank', 1114)
+        ]
+
+    def get_columns(self):
+        return self.columns
+
+
+class CodeforcesRatingColumn(Column):
+    def __init__(self):
+        super().__init__('cf-rating', 'CF Rating')
+        self.rating_cache = {}
+
+    def get_value(self, user):
+        account = user.accounts['codeforces']
+        if account:
+            result = self.rating_cache.get(account.name)
+            if not result:
+                result = CodeforcesUtil.get_rating(account.name)[-1]['newRating']
+            self.rating_cache[account.name] = result
+            return result
+        return None
+
+
+class CodeforcesContestColumn(Column):
+    def __init__(self, name, contest_id):
+        super().__init__('cf-{}'.format(contest_id), name)
+        self.name = name
+        self.contest_id = contest_id
+
+    def get_value(self, user):
+        account = user.accounts['codeforces']
+        if account:
+            result = CodeforcesUtil.get_standings(self.contest_id, [account.name])
+            for row in result['rows']:
+                if account.name in [item['handle'] for item in row['party']['members']]:
+                    return row['rank']
+        return None
