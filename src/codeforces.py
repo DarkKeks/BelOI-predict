@@ -10,7 +10,7 @@ class CodeforcesUtil:
             '&'.join(['='.join([key, str(val)]) for key, val in kwargs.items()]))
         result = requests.get(url).json()
         if result['status'] != 'OK':
-            raise Exception()
+            raise Exception(result['comment'])
 
         print(result)
         return result['result']
@@ -24,10 +24,10 @@ class CodeforcesUtil:
         )
 
     @staticmethod
-    def get_rating(user):
+    def get_info(users):
         return CodeforcesUtil.api_query(
-            'user.rating',
-            handle=user
+            'user.info',
+            handles=';'.join(users)
         )
 
 
@@ -51,15 +51,12 @@ class CodeforcesRatingColumn(Column):
         super().__init__('cf-rating', 'CF Rating')
         self.rating_cache = {}
 
-    def get_value(self, user):
-        account = user.accounts['codeforces']
-        if account:
-            result = self.rating_cache.get(account.name)
-            if not result:
-                result = CodeforcesUtil.get_rating(account.name)[-1]['newRating']
-            self.rating_cache[account.name] = result
-            return result
-        return None
+    def get_values(self, users):
+        accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
+        names = [account.name for account in accounts if account is not None]
+        info = CodeforcesUtil.get_info(names)
+        data = {item['handle']: item['rating'] for item in info}
+        return [data[account.name] if account is not None else None for account in accounts]
 
 
 class CodeforcesContestColumn(Column):
@@ -68,11 +65,12 @@ class CodeforcesContestColumn(Column):
         self.name = name
         self.contest_id = contest_id
 
-    def get_value(self, user):
-        account = user.accounts['codeforces']
-        if account:
-            result = CodeforcesUtil.get_standings(self.contest_id, [account.name])
-            for row in result['rows']:
-                if account.name in [item['handle'] for item in row['party']['members']]:
-                    return row['rank']
-        return None
+    def get_values(self, users):
+        accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
+        names = [account.name for account in accounts if account is not None]
+        standings = CodeforcesUtil.get_standings(self.contest_id, names)
+        data = {}
+        for row in standings['rows']:
+            for item in row['party']['members']:
+                data[item['handle']] = row['rank']
+        return [data.get(account.name) if account is not None else None for account in accounts]

@@ -36,9 +36,11 @@ class Spreadsheet:
     def write(self, table_name, users, columns):
         sheets = self.service.spreadsheets()
 
-        data = [[column.header for column in columns]]
-        for user in users:
-            data.append([column.get_value(user) for column in columns])
+        data = [
+            [column.header] + column.get_values(users) for column in columns
+        ]
+
+        data = [*zip(*data)]
 
         result = sheets.values().update(
             spreadsheetId=Spreadsheet.SPREADSHEET_ID,

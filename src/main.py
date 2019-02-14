@@ -23,7 +23,10 @@ class Column:
         self.header = header
 
     def get_value(self, user):
-        return ''
+        return None
+
+    def get_values(self, users):
+        return [self.get_value(user) for user in users]
 
 
 class GenericColumn(Column):
