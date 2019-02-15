@@ -36,8 +36,13 @@ class Platform:
 
 
 class Account:
-    def __init__(self, platform, name):
+    def __init__(self, platform):
         self.platform = platform
+
+
+class NamedAccount(Account):
+    def __init__(self, platform, name):
+        super().__init__(platform)
         self.name = name
 
 

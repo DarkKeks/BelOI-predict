@@ -6,6 +6,18 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 
+class Hyperlink:
+    PATTERN = '=HYPERLINK("{}";"{}")'
+
+    def __init__(self, text, link):
+        super().__init__()
+        self.text = text
+        self.link = link
+
+    def __str__(self):
+        return Hyperlink.PATTERN.format(self.link, self.text)
+
+
 class Spreadsheet:
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     SPREADSHEET_ID = '1HhSTgz9p87GJTSB-u2Y1jU19hJRIRNm_NWH7yfQHljM'
@@ -127,4 +139,3 @@ class Spreadsheet:
         print('{0} cells updated.'.format(result.get('updatedCells')))
 
         self.update_table_formatting(sheet_id, frozen_columns=frozen_columns)
-

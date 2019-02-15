@@ -1,5 +1,6 @@
 import requests
 from src.main import *
+from src.spreadsheet import Hyperlink
 
 
 class CodeforcesUtil:
@@ -33,12 +34,13 @@ class CodeforcesUtil:
 
 
 class Codeforces(Platform):
+    PROFILE_LINK_PATTERN = 'https://codeforces.com/profile/{}'
+
     def __init__(self):
         super().__init__('codeforces')
 
         self.columns = [
-            GenericColumn('cf-name', 'CF Name',
-                          lambda user: user.accounts['codeforces'].name if 'codeforces' in user.accounts else None),
+            GenericColumn('cf-name', 'CF Name', self.link_from_user),
             CodeforcesRating(),
         ]
         self.contests = [
@@ -55,6 +57,13 @@ class Codeforces(Platform):
     def get_contests(self):
         return self.contests
 
+    @staticmethod
+    def link_from_user(user):
+        if 'codeforces' in user.accounts:
+            name = user.accounts['codeforces'].name
+            return str(Hyperlink(name, Codeforces.PROFILE_LINK_PATTERN.format(name)))
+        return None
+
 
 class CodeforcesRating(Column):
     def __init__(self):
@@ -63,7 +72,7 @@ class CodeforcesRating(Column):
 
     def get_values(self, users):
         accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
-        names = [account.name for account in accounts if account is not None]
+        names = [account.name for account in accounts if account is not None and isinstance(account, NamedAccount)]
         info = CodeforcesUtil.get_info(names)
         data = {item['handle']: item['rating'] for item in info}
         return [data[account.name] if account is not None else None for account in accounts]
@@ -77,7 +86,7 @@ class CodeforcesContest(Contest):
 
     def get_values(self, users):
         accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
-        names = [account.name for account in accounts if account is not None]
+        names = [account.name for account in accounts if account is not None and isinstance(account, NamedAccount)]
         standings = CodeforcesUtil.get_standings(self.contest_id, names)
         data = {}
         for row in standings['rows']:
