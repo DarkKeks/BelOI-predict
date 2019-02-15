@@ -16,8 +16,10 @@ class BaseAccount(Account):
         GRODNO = "Гродненская"
         LYCEUM = "Лицей БГУ"
 
-    def __init__(self, platform, grade, region):
+    def __init__(self, platform, name, surname, grade, region):
         super().__init__(platform)
+        self.name = name
+        self.surname = surname
         self.grade = grade
         self.region = region
 
@@ -27,9 +29,9 @@ class BasePlatform(Platform):
     def __init__(self):
         super().__init__('base')
         self.columns = [
-            GenericColumn('user', 'Имя', lambda user: user.name),
-            GenericColumn('grade', 'Класс', lambda user: user.accounts['base'].grade),
-            GenericColumn('grade', 'Область', lambda user: user.accounts['base'].region)
+            GenericColumn('user', 'Имя', lambda user: f"{self.get_account(user).name} {self.get_account(user).surname}"),
+            GenericColumn('grade', 'Класс', lambda user: self.get_account(user).grade),
+            GenericColumn('grade', 'Область', lambda user: self.get_account(user).region)
         ]
 
     def get_columns(self):

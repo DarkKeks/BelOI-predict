@@ -117,14 +117,15 @@ class Spreadsheet:
         sheet_id = self.get_sheet(table_name)
 
         data = [
-            [column.header] + column.get_values(users) for platform in platforms for column in platform.columns
+            [column.header] + column.get_values(users) for platform in platforms for column in platform.get_columns()
         ]
 
         frozen_columns = len(data)
 
-        data += [
-            [contest.header] + contest.get_values(users) for platform in platforms for contest in platform.get_contests()
-        ]
+        contests = sorted([contest for platform in platforms for contest in platform.get_contests()],
+                          key=lambda x: x.date)
+
+        data += [[contest.header] + contest.get_values(users) for contest in contests]
 
         result = self.sheets.values().update(
             spreadsheetId=Spreadsheet.SPREADSHEET_ID,
