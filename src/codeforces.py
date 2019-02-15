@@ -1,6 +1,7 @@
 import requests
 from src.main import *
 
+
 class CodeforcesUtil:
 
     @staticmethod
@@ -38,15 +39,24 @@ class Codeforces(Platform):
         self.columns = [
             GenericColumn('cf-name', 'CF Name',
                           lambda user: user.accounts['codeforces'].name if 'codeforces' in user.accounts else None),
-            CodeforcesRatingColumn(),
-            CodeforcesContestColumn('CF 538 rank', 1114)
+            CodeforcesRating(),
+        ]
+        self.contests = [
+            CodeforcesContest('CF 538', 1114),
+            CodeforcesContest('CF GR 1', 1110),
+            CodeforcesContest('CF 537', 1111),
+            CodeforcesContest('CF 536', 1106),
+            CodeforcesContest('CF ED 59', 1107),
         ]
 
     def get_columns(self):
         return self.columns
 
+    def get_contests(self):
+        return self.contests
 
-class CodeforcesRatingColumn(Column):
+
+class CodeforcesRating(Column):
     def __init__(self):
         super().__init__('cf-rating', 'CF Rating')
         self.rating_cache = {}
@@ -59,7 +69,7 @@ class CodeforcesRatingColumn(Column):
         return [data[account.name] if account is not None else None for account in accounts]
 
 
-class CodeforcesContestColumn(Column):
+class CodeforcesContest(Contest):
     def __init__(self, name, contest_id):
         super().__init__('cf-{}'.format(contest_id), name)
         self.name = name

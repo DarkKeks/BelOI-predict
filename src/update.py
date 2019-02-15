@@ -1,4 +1,5 @@
 from src.codeforces import *
+from src.table import BeloiTable
 
 if __name__ == '__main__':
     cf_names = [
