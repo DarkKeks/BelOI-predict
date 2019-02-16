@@ -1,98 +1,98 @@
 [
   {
-    "name": "Балюк",
-    "surname": "Игорь",
+    "name": "Игорь",
+    "surname": "Балюк",
     "grade": 11,
     "region": "LYCEUM",
     "codeforces": "Baliuk"
   },
   {
-    "name": "Бобень",
-    "surname": "Вячеслав",
+    "name": "Вячеслав",
+    "surname": "Бобень",
     "grade": 11,
     "region": "MINSK_OBL",
     "codeforces": "DarkKeks"
   },
   {
-    "name": "Филинович",
-    "surname": "Алексей",
+    "name": "Алексей",
+    "surname": "Филинович",
     "grade": 11,
     "region": "BREST",
     "codeforces": "aleex"
   },
   {
-    "name": "Ширма",
-    "surname": "Кирилл",
+    "name": "Кирилл",
+    "surname": "Ширма",
     "grade": 11,
     "region": "BREST",
     "codeforces": "Flyce"
   },
   {
-    "name": "Борисов",
-    "surname": "Ярослав",
+    "name": "Ярослав",
+    "surname": "Борисов",
     "grade": 10,
     "region": "VITEBSK",
     "codeforces": "Yaroslaff"
   },
   {
-    "name": "Денгалёв",
-    "surname": "Даниил",
+    "name": "Даниил",
+    "surname": "Денгалёв",
     "grade": 11,
     "region": "MOGILEV",
     "codeforces": "programmer228"
   },
   {
-    "name": "Гришаев",
-    "surname": "Никита",
+    "name": "Никита",
+    "surname": "Гришаев",
     "grade": 11,
     "region": "MOGILEV",
     "codeforces": null
   },
   {
-    "name": "Кураш",
-    "surname": "Владислав",
+    "name": "Владислав",
+    "surname": "Кураш",
     "grade": 11,
     "region": "LYCEUM",
     "codeforces": null
   },
   {
-    "name": "Процкий",
-    "surname": "Сергей",
+    "name": "Сергей",
+    "surname": "Процкий",
     "grade": 10,
     "region": "LYCEUM",
     "codeforces": "sergell"
   },
   {
-    "name": "Сечко",
-    "surname": "Василий",
+    "name": "Василий",
+    "surname": "Сечко",
     "grade": 11,
     "region": "GRODNO",
     "codeforces": "banany2001"
   },
   {
-    "name": "Акуленко",
-    "surname": "Вячеслав",
+    "name": "Вячеслав",
+    "surname": "Акуленко",
     "grade": 11,
     "region": "GOMEL",
     "codeforces": "Akel"
   },
   {
-    "name": "Пискевич",
-    "surname": "Дариуш",
+    "name": "Дариуш",
+    "surname": "Пискевич",
     "grade": 11,
     "region": "VITEBSK",
     "codeforces": "Daryusz"
   },
   {
-    "name": "Костяной",
-    "surname": "Андрей",
+    "name": "Андрей",
+    "surname": "Костяной",
     "grade": 9,
     "region": "GOMEL",
     "codeforces": null
   },
   {
-    "name": "Мищенко",
-    "surname": "Андрей",
+    "name": "Андрей",
+    "surname": "Мищенко",
     "grade": 10,
     "region": "GOMEL",
     "codeforces": "andrew"

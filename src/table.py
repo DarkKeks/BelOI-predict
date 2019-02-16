@@ -61,7 +61,7 @@ class BeloiTable:
 
     def add_user(self, unique_id, data):
         if unique_id not in self.users:
-            user = User()
+            user = User(data)
             for platform in self.platforms.values():
                 platform.process_user(user, data)
             self.users[unique_id] = user
@@ -69,8 +69,13 @@ class BeloiTable:
     def get_platform(self, name):
         return self.platforms.get(name)
 
-    def update(self):
+    def update_platforms(self):
         for platform in self.platforms.values():
             platform.update_contests()
 
+    def update(self):
+        for platform in self.platforms.values():
+            platform.update_contests()
+            for user in self.users:
+                platform.process_user(user, user.data)
         self.spreadsheet.write('Main', self.users.values(), self.platforms.values())

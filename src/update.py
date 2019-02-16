@@ -42,7 +42,7 @@ class DataStorage:
 
     def save(self):
         with self.table_file.open('wb') as f:
-            pickle.dump(self, f)
+            pickle.dump(self.table, f)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 
-from src.main import Platform, Contest, NamedAccount
+from src.main import Platform, Contest, NamedAccount, GenericColumn
 
 
 class ZKSH(Platform):
@@ -45,6 +45,11 @@ class ZKSH(Platform):
                 date = datetime.utcfromtimestamp(params['date'])
                 url = params['standings']
                 self.contests[contest] = ZKSHContest(contest, name, date, url)
+
+    def get_columns(self):
+        return [
+            GenericColumn('zksh-names', "Имя в ЗКШ", lambda user: f"{self.get_account(user).name}")
+        ]
 
     def get_contests(self):
         return self.contests.values()

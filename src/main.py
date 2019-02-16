@@ -66,7 +66,8 @@ class NamedAccount(Account):
 
 
 class User:
-    def __init__(self):
+    def __init__(self, data):
+        self.data = data
         self.accounts = {}
 
     def add_account(self, account):
