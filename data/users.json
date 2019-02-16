@@ -1,0 +1,100 @@
+[
+  {
+    "name": "Балюк",
+    "surname": "Игорь",
+    "grade": 11,
+    "region": "LYCEUM",
+    "codeforces": "Baliuk"
+  },
+  {
+    "name": "Бобень",
+    "surname": "Вячеслав",
+    "grade": 11,
+    "region": "MINSK_OBL",
+    "codeforces": "DarkKeks"
+  },
+  {
+    "name": "Филинович",
+    "surname": "Алексей",
+    "grade": 11,
+    "region": "BREST",
+    "codeforces": "aleex"
+  },
+  {
+    "name": "Ширма",
+    "surname": "Кирилл",
+    "grade": 11,
+    "region": "BREST",
+    "codeforces": "Flyce"
+  },
+  {
+    "name": "Борисов",
+    "surname": "Ярослав",
+    "grade": 10,
+    "region": "VITEBSK",
+    "codeforces": "Yaroslaff"
+  },
+  {
+    "name": "Денгалёв",
+    "surname": "Даниил",
+    "grade": 11,
+    "region": "MOGILEV",
+    "codeforces": "programmer228"
+  },
+  {
+    "name": "Гришаев",
+    "surname": "Никита",
+    "grade": 11,
+    "region": "MOGILEV",
+    "codeforces": null
+  },
+  {
+    "name": "Кураш",
+    "surname": "Владислав",
+    "grade": 11,
+    "region": "LYCEUM",
+    "codeforces": null
+  },
+  {
+    "name": "Процкий",
+    "surname": "Сергей",
+    "grade": 10,
+    "region": "LYCEUM",
+    "codeforces": "sergell"
+  },
+  {
+    "name": "Сечко",
+    "surname": "Василий",
+    "grade": 11,
+    "region": "GRODNO",
+    "codeforces": "banany2001"
+  },
+  {
+    "name": "Акуленко",
+    "surname": "Вячеслав",
+    "grade": 11,
+    "region": "GOMEL",
+    "codeforces": "Akel"
+  },
+  {
+    "name": "Пискевич",
+    "surname": "Дариуш",
+    "grade": 11,
+    "region": "VITEBSK",
+    "codeforces": "Daryusz"
+  },
+  {
+    "name": "Костяной",
+    "surname": "Андрей",
+    "grade": 9,
+    "region": "GOMEL",
+    "codeforces": null
+  },
+  {
+    "name": "Мищенко",
+    "surname": "Андрей",
+    "grade": 10,
+    "region": "GOMEL",
+    "codeforces": "andrew"
+  }
+]

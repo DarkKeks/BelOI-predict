@@ -32,64 +32,84 @@ class CodeforcesUtil:
             handles=';'.join(users)
         )
 
+    @staticmethod
+    def get_contests():
+        return CodeforcesUtil.api_query(
+            'contest.list'
+        )
+
 
 class Codeforces(Platform):
-    PROFILE_LINK_PATTERN = 'https://codeforces.com/profile/{}'
+    profile_link_pattern = 'https://codeforces.com/profile/{}'
+    contest_border = datetime(2019, 1, 1, 0, 0, 0)
 
     def __init__(self):
         super().__init__('codeforces')
 
         self.columns = [
             GenericColumn('cf-name', 'CF Name', self.link_from_user),
-            CodeforcesRating(),
+            CodeforcesRating(self)
         ]
-        self.contests = [
-            CodeforcesContest('CF 538', 1114),
-            CodeforcesContest('CF GR 1', 1110),
-            CodeforcesContest('CF 537', 1111),
-            CodeforcesContest('CF 536', 1106),
-            CodeforcesContest('CF ED 59', 1107),
-        ]
+        self.contests = {}
+
+    def process_user(self, user, data):
+        if not self.user_has_account(user) and 'codeforces' in data and data['codeforces'] is not None:
+            user.add_account(NamedAccount(self, data['codeforces']))
+
+    def update_contests(self):
+        all_contests = CodeforcesUtil.get_contests()
+        for contest in all_contests:
+            if contest['id'] not in self.contests:
+                contest_date = datetime.utcfromtimestamp(contest['startTimeSeconds'])
+                if contest_date > self.contest_border and contest['phase'] == 'FINISHED':
+                    self.contests[contest['id']] = CodeforcesContest(self, contest['name'], contest['id'], contest_date)
 
     def get_columns(self):
         return self.columns
 
     def get_contests(self):
-        return self.contests
+        return self.contests.values()
 
     @staticmethod
     def link_from_user(user):
         if 'codeforces' in user.accounts:
             name = user.accounts['codeforces'].name
-            return str(Hyperlink(name, Codeforces.PROFILE_LINK_PATTERN.format(name)))
+            return str(Hyperlink(name, Codeforces.profile_link_pattern.format(name)))
         return None
 
 
 class CodeforcesRating(Column):
-    def __init__(self):
+    def __init__(self, platform):
         super().__init__('cf-rating', 'CF Rating')
-        self.rating_cache = {}
+        self.platform = platform
 
     def get_values(self, users):
-        accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
-        names = [account.name for account in accounts if account is not None and isinstance(account, NamedAccount)]
+        accounts = [self.platform.get_account(user) for user in users]
+        names = [account.name for account in accounts if
+                 isinstance(account, NamedAccount)]
         info = CodeforcesUtil.get_info(names)
         data = {item['handle']: item['rating'] for item in info}
-        return [data[account.name] if account is not None else None for account in accounts]
+        return [data[account.name] if account is not None else '' for account in accounts]
 
 
 class CodeforcesContest(Contest):
-    def __init__(self, name, contest_id):
-        super().__init__('cf-{}'.format(contest_id), name)
+    def __init__(self, platform, name, contest_id, date):
+        super().__init__('cf-{}'.format(contest_id), name, date)
+        self.platform = platform
         self.name = name
         self.contest_id = contest_id
+        self.results = {}
 
     def get_values(self, users):
-        accounts = [user.accounts['codeforces'] if 'codeforces' in user.accounts else None for user in users]
-        names = [account.name for account in accounts if account is not None and isinstance(account, NamedAccount)]
-        standings = CodeforcesUtil.get_standings(self.contest_id, names)
-        data = {}
-        for row in standings['rows']:
-            for item in row['party']['members']:
-                data[item['handle']] = row['rank']
-        return [data.get(account.name) if account is not None else None for account in accounts]
+        accounts = [self.platform.get_account(user) for user in users]
+        names = [account.name for account in accounts if
+                 isinstance(account, NamedAccount) and
+                 account.name not in self.results]
+        if len(names):
+            standings = CodeforcesUtil.get_standings(self.contest_id, names)
+            data = {}
+            for row in standings['rows']:
+                for item in row['party']['members']:
+                    data[item['handle']] = row['rank']
+            self.results.update(data)
+        return [self.results.get(account.name) if account is not None else '' for account in accounts]

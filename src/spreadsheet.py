@@ -122,8 +122,8 @@ class Spreadsheet:
 
         frozen_columns = len(data)
 
-        contests = sorted([contest for platform in platforms for contest in platform.get_contests()],
-                          key=lambda x: x.date)
+        contests = [contest for platform in platforms for contest in platform.get_contests()]
+        contests = sorted(contests, key=lambda x: x.date)
 
         data += [[contest.header] + contest.get_values(users) for contest in contests]
 

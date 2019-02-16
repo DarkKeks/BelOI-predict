@@ -3,4 +3,4 @@ google-auth-httplib2
 google-auth-oauthlib
 requests
 bs4
-fuzzywuzzy
+fuzzywuzzy[speedup]

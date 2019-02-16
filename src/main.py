@@ -35,8 +35,17 @@ class Platform:
     def __init__(self, name):
         self.name = name
 
+    def process_user(self, user, data):
+        pass
+
+    def update_contests(self):
+        pass
+
     def get_account(self, user):
         return user.accounts.get(self.name)
+
+    def user_has_account(self, user):
+        return self.name in user.accounts
 
     def get_columns(self):
         return []

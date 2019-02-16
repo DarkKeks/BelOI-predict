@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 
-from src.main import Platform, Contest, NamedAccount, GenericColumn
+from src.main import Platform, Contest, NamedAccount
 
 
 class ZKSH(Platform):
@@ -16,26 +16,12 @@ class ZKSH(Platform):
     def __init__(self):
         super().__init__('zksh')
         self.contests = {}
-        self.columns = [
-            GenericColumn('zksh-name', "Имя в ЗКШ", self.get_name)
-        ]
 
-    def reload_contests(self):
-        with ZKSH.config.open('r') as f:
-            config = json.load(f)
-        for contest, params in config.items():
-            if contest not in self.contests:
-                name = params['name']
-                date = datetime.utcfromtimestamp(params['date'])
-                url = params['standings']
-                self.contests[contest] = ZKSHContest(contest, name, date, url)
-
-    def get_name(self, user):
-        if 'zksh' not in user.accounts:
+    def process_user(self, user, data):
+        if not self.user_has_account(user):
             account = self.find_user(user)
             if account is not None:
                 user.add_account(account)
-        return self.get_account(user).name
 
     def find_user(self, user):
         formatted_name = f"{user.accounts['base'].name} {user.accounts['base'].surname}"
@@ -50,12 +36,17 @@ class ZKSH(Platform):
             return NamedAccount(self, best[0])
         return None
 
-    def get_columns(self):
-        self.reload_contests()
-        return self.columns
+    def update_contests(self):
+        with ZKSH.config.open('r') as f:
+            config = json.load(f)
+        for contest, params in config.items():
+            if contest not in self.contests:
+                name = params['name']
+                date = datetime.utcfromtimestamp(params['date'])
+                url = params['standings']
+                self.contests[contest] = ZKSHContest(contest, name, date, url)
 
     def get_contests(self):
-        self.reload_contests()
         return self.contests.values()
 
 
@@ -71,7 +62,6 @@ class ZKSHContest(Contest):
         rows = table.find_all('tr')[1:-3]
         for row in rows:
             data = row.find_all('td', class_='stnd')
-            print(data[0].text, data[1].text)
             pos_match = re.search(r'\d+', data[0].text)
             if pos_match:
                 pos = pos_match.group(0)

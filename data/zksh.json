@@ -1,21 +1,21 @@
 {
   "qual-1": {
-    "name": "Отбор 1",
+    "name": "ЗКШ Отбор 1",
     "date": 1540647000,
     "standings": "http://zksh2019.it-edu.mipt.ru/index.cgi?data=macros/qday&sbname=zksh2019&class=zksh2019&rid=1&qround=1"
   },
   "qual-2": {
-    "name": "Отбор 2+",
+    "name": "ЗКШ Отбор 2+",
     "date": 1543137300,
     "standings": "http://zksh2019.it-edu.mipt.ru/index.cgi?data=macros/qday&sbname=zksh2019&class=zksh2019&rid=1&qround=2"
   },
   "qual-3": {
-    "name": "Отбор 3",
+    "name": "ЗКШ Отбор 3",
     "date": 1544965200,
     "standings": "http://zksh2019.it-edu.mipt.ru/index.cgi?data=macros/qday&sbname=zksh2019&class=zksh2019&rid=1&qround=3"
   },
   "qual-4": {
-    "name": "Отбор 4",
+    "name": "ЗКШ Отбор 4",
     "date": 1547974800,
     "standings": "http://zksh2019.it-edu.mipt.ru/index.cgi?data=macros/qday&sbname=zksh2019&class=zksh2019&rid=1&qround=4"
   }

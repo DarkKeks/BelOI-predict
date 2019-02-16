@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.main import Platform, GenericColumn, Account
+from src.main import Platform, GenericColumn, Account, User
 from src.spreadsheet import Spreadsheet
 
 
@@ -28,25 +28,49 @@ class BasePlatform(Platform):
 
     def __init__(self):
         super().__init__('base')
-        self.columns = [
+
+    def process_user(self, user, data):
+        if not self.user_has_account(user):
+            user.add_account(BaseAccount(self,
+                                         data['name'],
+                                         data['surname'],
+                                         data['grade'],
+                                         BaseAccount.Region[data['region']]))
+
+    def get_columns(self):
+        # Generating columns every call because you are unable to pickle lambdas :(
+        return [
             GenericColumn('user', 'Имя', lambda user: f"{self.get_account(user).name} {self.get_account(user).surname}"),
             GenericColumn('grade', 'Класс', lambda user: self.get_account(user).grade),
             GenericColumn('grade', 'Область', lambda user: self.get_account(user).region)
         ]
 
-    def get_columns(self):
-        return self.columns
-
 
 class BeloiTable:
 
     def __init__(self):
-        self.users = []
-        self.platforms = [
-            BasePlatform()
-        ]
+        self.users = {}
+        self.platforms = {}
+        self.add_platform(BasePlatform())
+
         self.spreadsheet = Spreadsheet()
         self.spreadsheet.auth()
 
+    def add_platform(self, platform):
+        self.platforms[platform.name] = platform
+
+    def add_user(self, unique_id, data):
+        if unique_id not in self.users:
+            user = User()
+            for platform in self.platforms.values():
+                platform.process_user(user, data)
+            self.users[unique_id] = user
+
+    def get_platform(self, name):
+        return self.platforms.get(name)
+
     def update(self):
-        self.spreadsheet.write('Main', self.users, self.platforms)
+        for platform in self.platforms.values():
+            platform.update_contests()
+
+        self.spreadsheet.write('Main', self.users.values(), self.platforms.values())

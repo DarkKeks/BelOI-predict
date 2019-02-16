@@ -1,40 +1,53 @@
+import json
+import pickle
+from pathlib import Path
+
 from src.codeforces import *
-from src.table import BeloiTable, BaseAccount
+from src.table import BeloiTable
 from src.zksh import ZKSH
 
+
+class DataStorage:
+    table_file = Path('data/table.pickle')
+    users_file = Path('data/users.json')
+
+    def __init__(self):
+        if self.table_file.exists():
+            try:
+                with self.table_file.open('rb') as f:
+                    self.table = pickle.load(f)
+            except:
+                self.table = self.init_table()
+        else:
+            self.table = self.init_table()
+
+        self.update_users()
+
+    @staticmethod
+    def init_table():
+        beloi_table = BeloiTable()
+
+        beloi_table.add_platform(Codeforces())
+        beloi_table.add_platform(ZKSH())
+
+        return beloi_table
+
+    def update_users(self):
+        for it in self.get_users():
+            unique_id = f"{it['surname']} {it['name']}"
+            self.table.add_user(unique_id, it)
+
+    def get_users(self):
+        return json.load(self.users_file.open('r'))
+
+    def save(self):
+        with self.table_file.open('wb') as f:
+            pickle.dump(self, f)
+
+
 if __name__ == '__main__':
-    data = [
-        ('Балюк', 'Игорь', 11, BaseAccount.Region.LYCEUM, 'Baliuk',),
-        ('Бобень', 'Вячеслав', 11, BaseAccount.Region.MINSK_OBL, 'DarkKeks'),
-        ('Филинович', 'Алексей', 11, BaseAccount.Region.BREST, 'aleex'),
-        ('Ширма', 'Кирилл', 11, BaseAccount.Region.BREST, 'Flyce'),
-        ('Борисов', 'Ярослав', 10, BaseAccount.Region.VITEBSK, 'Yaroslaff'),
-        ('Денгалёв', 'Даниил', 11, BaseAccount.Region.MOGILEV, 'programmer228'),
-        ('Гришаев', 'Никита', 11, BaseAccount.Region.MOGILEV, None),
-        ('Кураш', 'Владислав', 11, BaseAccount.Region.LYCEUM, None),
-        ('Процкий', 'Сергей', 10, BaseAccount.Region.LYCEUM, 'sergell'),
-        ('Сечко', 'Василий', 11, BaseAccount.Region.GRODNO, 'banany2001'),
-        ('Акуленко', 'Вячеслав', 11, BaseAccount.Region.GOMEL, 'Akel'),
-        ('Пискевич', 'Дариуш', 11, BaseAccount.Region.VITEBSK, 'Daryusz'),
-        ('Костяной', 'Андрей', 9, BaseAccount.Region.GOMEL, None),
-        ('Мищенко', 'Андрей', 10, BaseAccount.Region.GOMEL, 'andrew'),
-    ]
+    data = DataStorage()
 
-    beloi_table = BeloiTable()
+    data.table.update()
 
-    base = beloi_table.platforms[0]
-
-    cf = Codeforces()
-    beloi_table.platforms.append(cf)
-
-    zksh = ZKSH()
-    beloi_table.platforms.append(zksh)
-
-    for it in data:
-        user = User()
-        user.add_account(BaseAccount(base, it[1], it[0], it[2], it[3]))
-        if it[4] is not None:
-            user.add_account(NamedAccount(cf, it[4]))
-        beloi_table.users.append(user)
-
-    beloi_table.update()
+    data.save()
