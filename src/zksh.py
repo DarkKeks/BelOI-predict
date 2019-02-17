@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 
+from src import util
 from src.main import Platform, Contest, NamedAccount, GenericColumn
 
 
@@ -74,6 +75,7 @@ class ZKSHContest(Contest):
                 self.results[name] = pos
 
     def get_values(self, users):
-        return [self.results.get(user.accounts['zksh'].name)
-                if 'zksh' in user.accounts and isinstance(user.accounts['zksh'], NamedAccount) else None
-                for user in users]
+        res = [self.results.get(user.accounts['zksh'].name, '')
+               if 'zksh' in user.accounts and isinstance(user.accounts['zksh'], NamedAccount) else ''
+               for user in users]
+        return util.renumber(res)

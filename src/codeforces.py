@@ -1,4 +1,6 @@
 import requests
+
+from src import util
 from src.main import *
 from src.spreadsheet import Hyperlink
 
@@ -112,4 +114,5 @@ class CodeforcesContest(Contest):
                 for item in row['party']['members']:
                     data[item['handle']] = row['rank']
             self.results.update(data)
-        return [self.results.get(account.name) if account is not None else '' for account in accounts]
+        res = [self.results.get(account.name, '') if account is not None else '' for account in accounts]
+        return util.renumber(res)

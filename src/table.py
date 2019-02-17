@@ -76,6 +76,6 @@ class BeloiTable:
     def update(self):
         for platform in self.platforms.values():
             platform.update_contests()
-            for user in self.users:
+            for user in self.users.values():
                 platform.process_user(user, user.data)
         self.spreadsheet.write('Main', self.users.values(), self.platforms.values())
