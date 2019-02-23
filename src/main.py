@@ -6,11 +6,11 @@ class Column:
         self.name = name
         self.header = header
 
-    def get_value(self, user):
+    def get_value(self, user, cell):
         return None
 
-    def get_values(self, users):
-        return [self.get_value(user) for user in users]
+    def get_values(self, users, start_cell):
+        return [self.get_value(user, start_cell.add(row=idx)) for idx, user in enumerate(users)]
 
 
 class GenericColumn(Column):
@@ -18,7 +18,7 @@ class GenericColumn(Column):
         super().__init__(name, header)
         self.key = key
 
-    def get_value(self, user):
+    def get_value(self, user, cell):
         try:
             return self.key(user)
         except AttributeError:

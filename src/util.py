@@ -6,5 +6,5 @@ def renumber(results):
     cleared = [x for x in results if x]
     for idx, val in enumerate(sorted(cleared, key=lambda x: int(x))):
         for i in pos[val]:
-            results[i] = f"{idx + 1} ({val})"
+            results[i] = f"{idx + 1}"
     return results

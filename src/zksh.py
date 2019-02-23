@@ -74,7 +74,7 @@ class ZKSHContest(Contest):
                 name = re.search(r'.+(?=\s\(\d+\))', data[1].text).group(0)
                 self.results[name] = pos
 
-    def get_values(self, users):
+    def get_values(self, users, start_cell):
         res = [self.results.get(user.accounts['zksh'].name, '')
                if 'zksh' in user.accounts and isinstance(user.accounts['zksh'], NamedAccount) else ''
                for user in users]

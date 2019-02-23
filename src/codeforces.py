@@ -85,7 +85,7 @@ class CodeforcesRating(Column):
         super().__init__('cf-rating', 'CF Rating')
         self.platform = platform
 
-    def get_values(self, users):
+    def get_values(self, users, start_cell):
         accounts = [self.platform.get_account(user) for user in users]
         names = [account.name for account in accounts if
                  isinstance(account, NamedAccount)]
@@ -102,17 +102,20 @@ class CodeforcesContest(Contest):
         self.contest_id = contest_id
         self.results = {}
 
-    def get_values(self, users):
+    def get_values(self, users, start_cell):
         accounts = [self.platform.get_account(user) for user in users]
         names = [account.name for account in accounts if
                  isinstance(account, NamedAccount) and
                  account.name not in self.results]
-        if len(names):
+        if len(names) > 0:
             standings = CodeforcesUtil.get_standings(self.contest_id, names)
             data = {}
             for row in standings['rows']:
                 for item in row['party']['members']:
                     data[item['handle']] = row['rank']
+            for name in names:
+                if name not in data:
+                    data[name] = ''
             self.results.update(data)
         res = [self.results.get(account.name, '') if account is not None else '' for account in accounts]
         return util.renumber(res)

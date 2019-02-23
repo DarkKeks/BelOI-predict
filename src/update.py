@@ -3,6 +3,7 @@ import pickle
 from pathlib import Path
 
 from src.codeforces import *
+from src.score import ScorePlatform
 from src.table import BeloiTable
 from src.zksh import ZKSH
 
@@ -29,6 +30,7 @@ class DataStorage:
 
         beloi_table.add_platform(Codeforces())
         beloi_table.add_platform(ZKSH())
+        beloi_table.add_platform(ScorePlatform())
 
         return beloi_table
 
