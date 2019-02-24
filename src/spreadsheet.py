@@ -5,6 +5,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+from src.cell import Cell
 from src.score import ScoreColumn, ScorePlatform, GP30
 
 
@@ -18,43 +19,6 @@ class Hyperlink:
 
     def __str__(self):
         return Hyperlink.PATTERN.format(self.link, self.text)
-
-
-class Cell:
-    def __init__(self, row=1, col=1, sheet=None):
-        self.sheet = sheet
-        self.row = row
-        self.col = col
-
-    def __str__(self):
-        if self.sheet:
-            return f"{self.sheet}!{Cell.idx_to_col(self.col)}{self.row}"
-        return f"{Cell.idx_to_col(self.col)}{self.row}"
-
-    def copy(self, row=None, col=None, sheet=None):
-        result = Cell(self.row if not row else row,
-                      self.col if not col else col,
-                      self.sheet if not sheet  else sheet)
-        return result
-
-    def add(self, row=0, col=0):
-        return Cell(self.row + row, self.col + col, self.sheet)
-
-    def sub(self, row=0, col=0):
-        return self.add(-row, -col)
-
-    @staticmethod
-    def idx_to_col(idx):
-        result = ''
-        while idx > 0:
-            digit = (idx % 26)
-            if digit == 0:
-                result += 'Z'
-                idx -= 26
-            else:
-                result += chr(ord('A') + digit - 1)
-            idx //= 26
-        return result[::-1]
 
 
 class Spreadsheet:
@@ -193,9 +157,9 @@ class Spreadsheet:
     def update_score(self, contests_range, cols, rows):
         score_sheet = self.get_sheet(ScoreColumn.sheet)
 
-        gp30_range = Cell(sheet=ScoreColumn.sheet)
+        gp30_range = ScorePlatform.START_CELL.copy(sheet=ScoreColumn.sheet)
         gp30_end_range = gp30_range.add(row=len(GP30.scores) - 1)
-        result = self.sheets.values().update(
+        self.sheets.values().update(
             spreadsheetId=Spreadsheet.SPREADSHEET_ID,
             range=gp30_range,
             valueInputOption='USER_ENTERED',
@@ -230,23 +194,36 @@ class Spreadsheet:
 
         print(f"Updated {result.get('updatedCells')} cells")
 
-        data = [
-            [ScorePlatform.SUM_FORMULA.format(
-                result_range.add(row=idx),
-                result_range.add(row=idx, col=cols - 1)
-            ) for idx in range(rows)]
-        ]
-
-        result = self.sheets.values().update(
+        self.sheets.values().update(
             spreadsheetId=Spreadsheet.SPREADSHEET_ID,
-            range=str(Cell(col=2, sheet=ScoreColumn.sheet)),
+            range=str(ScorePlatform.SCORE_CELL.copy(sheet=ScoreColumn.sheet)),
             valueInputOption='USER_ENTERED',
             body={
-                'values': data,
+                'values': [
+                    [ScorePlatform.SUM_FORMULA.format(
+                        result_range.add(row=idx),
+                        result_range.add(row=idx, col=cols - 1)
+                    ) for idx in range(rows)]
+                ],
                 'majorDimension': 'COLUMNS'
             }
         ).execute()
 
-        print("Updated sum cells")
+        self.sheets.values().update(
+            spreadsheetId=Spreadsheet.SPREADSHEET_ID,
+            range=str(ScorePlatform.AVERAGE_CELL.copy(sheet=ScoreColumn.sheet)),
+            valueInputOption='USER_ENTERED',
+            body={
+                'values': [
+                    [ScorePlatform.AVERAGE_FORMULA.format(
+                        result_range.add(row=idx),
+                        result_range.add(row=idx, col=cols - 1)
+                    ) for idx in range(rows)]
+                ],
+                'majorDimension': 'COLUMNS'
+            }
+        ).execute()
+
+        print("Updated sum and average cells")
 
 

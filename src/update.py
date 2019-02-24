@@ -2,10 +2,10 @@ import json
 import pickle
 from pathlib import Path
 
-from src.codeforces import *
+from src.platforms.codeforces import *
 from src.score import ScorePlatform
 from src.table import BeloiTable
-from src.zksh import ZKSH
+from src.platforms.zksh import ZKSH
 
 
 class DataStorage:
